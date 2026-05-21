@@ -6,534 +6,797 @@
     <title>Lafiray — Marketplace Automobile Moderne</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         :root {
-            --bg-main: #0a0a0a;
-            --bg-card: rgba(20, 20, 20, 0.6);
-            --gold: #D4AF37;
-            --gold-gradient: linear-gradient(135deg, #E6C875 0%, #B68D25 100%);
-            --text-main: #f5f5f5;
-            --text-muted: #888888;
-            --border-light: rgba(255, 255, 255, 0.1);
-            --border-gold: rgba(212, 175, 55, 0.3);
-            --glass-bg: rgba(30, 30, 30, 0.4);
-            --glass-blur: blur(16px);
+            --bg: #080808;
+            --gold: #C9973A;
+            --gold-light: #E8B84B;
+            --gold-dim: rgba(201,151,58,0.15);
+            --gold-border: rgba(201,151,58,0.3);
+            --surface: rgba(255,255,255,0.03);
+            --surface-hover: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.08);
+            --text: #F0EDE8;
+            --muted: #7A7570;
+            --card-bg: rgba(18,16,14,0.8);
+            --r: 10px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Effets de lumière en arrière-plan */
-        .glow {
-            position: absolute;
+        /* ── AMBIENT GLOWS ── */
+        .amb {
+            position: fixed;
             border-radius: 50%;
-            background: rgba(212, 175, 55, 0.15);
-            filter: blur(100px);
-            z-index: 0;
             pointer-events: none;
+            z-index: 0;
+            filter: blur(120px);
+            opacity: 0.4;
         }
-        .glow-1 { top: -10%; left: 30%; width: 400px; height: 400px; }
-        .glow-2 { bottom: 10%; right: 10%; width: 500px; height: 500px; }
-        .glow-3 { top: 40%; left: -10%; width: 300px; height: 300px; }
+        .amb-1 { top: -8%; left: 20%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(201,151,58,0.25) 0%, transparent 70%); }
+        .amb-2 { bottom: 0; right: -10%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(201,151,58,0.12) 0%, transparent 70%); }
+        .amb-3 { top: 40%; left: -15%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(100,80,30,0.2) 0%, transparent 70%); }
 
-        .container {
-            width: 100%;
-            max-width: 1440px;
-            padding: 3rem;
-            display: grid;
-            grid-template-columns: 4fr 7fr;
-            gap: 4rem;
+        /* ── NOISE GRAIN ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+            pointer-events: none;
             z-index: 1;
-            position: relative;
+            opacity: 0.6;
         }
 
-        /* ================= GAUCHE ================= */
-        .left-col {
+        /* ── LAYOUT ── */
+        .page {
+            position: relative;
+            z-index: 2;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 2.5rem 2.5rem;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 0;
+            min-height: 100vh;
+        }
+
+        /* ── NAV / LOGO ── */
+        nav {
+            grid-column: 1 / -1;
             display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-light);
-            padding-right: 3rem;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
         }
 
         .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--gold-light);
+        }
+
+        .logo span {
+            display: inline-block;
+            width: 6px; height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            margin-left: 3px;
+            vertical-align: super;
+        }
+
+        .nav-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--gold-border);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
             color: var(--gold);
-            margin-bottom: 3rem;
-            letter-spacing: -0.5px;
+            font-weight: 500;
         }
 
-        .swoosh {
-            width: 60px;
-            height: 10px;
-            margin-bottom: 1rem;
+        .nav-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--gold);
+            animation: pulse 2s infinite;
         }
 
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.03em;
+        @keyframes pulse {
+            0%,100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
         }
 
-        .description {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            max-width: 90%;
+        /* ── LEFT COLUMN ── */
+        .left {
+            padding-right: 3.5rem;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
         .eyebrow {
-            color: var(--gold);
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        /* Formulaire */
-        .notif-form {
+        .eyebrow::before {
+            content: '';
+            display: block;
+            width: 24px; height: 1px;
+            background: var(--gold);
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.8rem, 3vw, 2.8rem);
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            color: var(--text);
+        }
+
+        h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, #E8B84B 0%, #C9973A 50%, #A67C28 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .desc {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: var(--muted);
+            max-width: 340px;
+        }
+
+        /* ── FORM ── */
+        .form-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: -1rem;
+        }
+
+        .form-wrap {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 3rem;
+            gap: 0.75rem;
         }
 
-        .input-group {
-            display: flex;
-            gap: 1rem;
-        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
 
-        input {
+        input, textarea {
             width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-light);
-            padding: 1rem 1.2rem;
-            border-radius: 6px;
-            color: var(--text-main);
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: border-color 0.3s ease;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.85rem 1.1rem;
+            border-radius: var(--r);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.875rem;
+            transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+            resize: none;
         }
 
-        input:focus {
+        input:focus, textarea:focus {
             outline: none;
             border-color: var(--gold);
+            background: var(--surface-hover);
+            box-shadow: 0 0 0 3px rgba(201,151,58,0.12);
         }
 
-        input::placeholder { color: rgba(255, 255, 255, 0.3); }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
 
-        .btn-submit {
-            background: var(--gold-gradient);
-            color: #000;
+        .btn {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #E8B84B 0%, #C9973A 60%, #A67C28 100%);
+            color: #0a0800;
             border: none;
-            padding: 1.1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1rem;
+            padding: 1rem;
+            border-radius: var(--r);
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
             cursor: pointer;
-            transition: transform 0.2s ease, filter 0.2s ease;
+            transition: transform 0.2s, filter 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+        .btn:active { transform: translateY(0); }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
         }
 
-        /* Ecosystème */
-        .ecosystem-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--gold);
+        .btn .arrow { transition: transform 0.2s; }
+        .btn:hover .arrow { transform: translateX(4px); }
+
+        /* Success / Error states */
+        .toast {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 0.85rem 1rem;
+            border-radius: var(--r);
+            font-size: 0.85rem;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+        }
+        .toast.success { display: flex; background: rgba(40,160,90,0.12); border: 1px solid rgba(40,160,90,0.3); color: #5ed49a; }
+        .toast.error { display: flex; background: rgba(200,60,60,0.12); border: 1px solid rgba(200,60,60,0.3); color: #f08080; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── ECOSYSTEM ── */
+        .eco-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            margin-bottom: -0.5rem;
         }
 
-        .ecosystem-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.8rem;
-        }
+        .eco-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
 
         .eco-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            padding: 1rem;
-            border-radius: 8px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 0.9rem 0.8rem;
+            transition: border-color 0.25s, background 0.25s;
         }
 
-        .eco-header {
+        .eco-card:hover { border-color: var(--gold-border); background: var(--surface-hover); }
+
+        .eco-head {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-            color: #fff;
+            gap: 6px;
+            font-family: 'Syne', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 0.6rem;
         }
 
-        .eco-header svg { width: 16px; height: 16px; }
-
-        .eco-list {
-            list-style: none;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            line-height: 1.6;
+        .eco-list { list-style: none; }
+        .eco-list li {
+            font-size: 0.68rem;
+            color: var(--muted);
+            padding: 2px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        .eco-list li::before {
-            content: "•";
-            color: var(--gold);
-            margin-right: 4px;
-        }
+        .eco-list li::before { content: '›'; color: var(--gold); font-size: 0.85rem; }
 
-        /* ================= DROITE ================= */
-        .right-col {
+        /* ── RIGHT COLUMN ── */
+        .right {
+            padding-left: 3.5rem;
             display: flex;
             flex-direction: column;
-            position: relative;
+            gap: 2rem;
         }
 
-        /* Section Graphique du Haut */
-        .visual-area {
+        /* ── HERO VISUAL ── */
+        .visual {
+            flex: 1;
             position: relative;
-            flex-grow: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 500px;
-            margin-bottom: 2rem;
+            min-height: 400px;
         }
 
-        .soon-text {
+        .soon-bg {
             position: absolute;
-            font-size: 22vw;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(80px, 16vw, 200px);
             font-weight: 800;
             color: transparent;
-            -webkit-text-stroke: 1px rgba(212, 175, 55, 0.2);
+            -webkit-text-stroke: 1px rgba(201,151,58,0.12);
             letter-spacing: -0.05em;
-            line-height: 1;
-            z-index: 0;
             user-select: none;
+            z-index: 0;
+            animation: driftText 8s ease-in-out infinite;
         }
 
-        /* Image de la jante (Remplacer l'URL par l'image de votre choix) */
-        .wheel-image {
+        @keyframes driftText {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .wheel-wrap {
             position: absolute;
-            width: 70%;
-            max-width: 450px;
+            width: min(55%, 360px);
+            aspect-ratio: 1;
             z-index: 1;
-            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
+            animation: spin 30s linear infinite;
         }
 
-        /* Cartes en verre (Glassmorphism) */
-        .glass-cards-wrapper {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 1.2rem;
-            width: 220px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
-        }
-
-        .glass-card:hover { transform: translateY(-10px); border-color: var(--gold); }
-
-        .card-1 { transform: translateY(20px) rotate(-2deg); }
-        .card-2 { transform: translateY(-20px) scale(1.05); z-index: 3; }
-        .card-3 { transform: translateY(20px) rotate(2deg); }
-
-        .step-badge {
-            display: inline-block;
-            border: 1px solid var(--border-gold);
-            color: var(--gold);
-            font-size: 0.65rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-        }
-
-        .step-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        /* Squelettes UI dans les cartes */
-        .ui-car-img {
-            width: 100%;
-            height: 80px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 8px;
-            margin-bottom: 0.8rem;
+        .wheel-wrap img {
+            width: 100%; height: 100%;
+            border-radius: 50%;
             object-fit: cover;
+            filter: drop-shadow(0 30px 60px rgba(0,0,0,0.9)) brightness(0.85);
         }
-        
-        .ui-text-line {
-            height: 6px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            margin-bottom: 6px;
-        }
-        .ui-text-line.short { width: 60%; }
 
-        .ui-row {
+        /* ── STEP CARDS ── */
+        .steps {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 0;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .s-card {
+            background: rgba(12,10,8,0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 1rem;
+            width: 170px;
+            pointer-events: all;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .s-card:hover { transform: translateY(-8px) !important; border-color: var(--gold-border); }
+
+        .s-card:nth-child(1) { transform: translateY(24px) rotate(-2.5deg); }
+        .s-card:nth-child(2) { transform: scale(1.04); z-index: 4; }
+        .s-card:nth-child(3) { transform: translateY(24px) rotate(2.5deg); }
+
+        .s-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: 1px solid var(--gold-border);
+            color: var(--gold);
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 100px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .s-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+        }
+
+        .s-img {
+            width: 100%; height: 65px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 0.6rem;
+        }
+        .s-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; }
+
+        .s-line { height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; margin-bottom: 4px; }
+        .s-line.sh { width: 55%; }
+
+        .s-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 0;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .ui-icon { width: 24px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 4px; }
-        .ui-btn-mini { background: var(--gold-gradient); color: #000; font-size: 0.6rem; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: none;}
-        .ui-btn-full { width: 100%; background: var(--gold-gradient); color: #000; text-align: center; padding: 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; margin-top: 1rem; border: none;}
 
-        /* Section Fonctionnalités du Bas */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-top: auto;
+        .s-icon { width: 20px; height: 20px; background: rgba(255,255,255,0.08); border-radius: 4px; flex-shrink: 0; }
+
+        .s-minibtn {
+            background: linear-gradient(135deg, #E8B84B, #A67C28);
+            color: #0a0800;
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 3px 7px;
+            border-radius: 4px;
+            border: none;
+            cursor: default;
         }
 
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 1.5rem 1rem;
+        .s-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #E8B84B, #A67C28);
+            color: #0a0800;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 7px;
+            border-radius: 6px;
+            border: none;
+            margin-top: 0.7rem;
+            cursor: default;
+            font-family: 'Syne', sans-serif;
+        }
+
+        /* ── FEATURE CARDS ── */
+        .features { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; }
+
+        .f-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 1.2rem 1rem;
             text-align: center;
-            transition: background 0.3s ease;
+            transition: background 0.25s, border-color 0.25s, transform 0.25s;
+            cursor: default;
         }
 
-        .feature-card:hover {
-            background: rgba(255,255,255,0.05);
-            border-color: var(--border-gold);
-        }
+        .f-card:hover { background: var(--surface-hover); border-color: var(--gold-border); transform: translateY(-4px); }
 
         .f-icon {
-            width: 32px;
-            height: 32px;
-            margin: 0 auto 1rem auto;
+            width: 36px; height: 36px;
+            margin: 0 auto 0.8rem;
             color: var(--gold);
         }
 
-        .f-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+        .f-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
         }
 
-        .f-desc {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            line-height: 1.4;
+        .f-text { font-size: 0.7rem; color: var(--muted); line-height: 1.5; }
+
+        /* ── RESPONSIVE ── */
+
+        /* Tablet */
+        @media (max-width: 1100px) {
+            .page {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+            .left {
+                border-right: none;
+                padding-right: 0;
+                border-bottom: 1px solid var(--border);
+                padding-bottom: 2.5rem;
+            }
+            .right { padding-left: 0; }
+            h1 { font-size: 2.2rem; }
+            .features { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* ================= RESPONSIVE ================= */
-        @media (max-width: 1200px) {
-            .container { grid-template-columns: 1fr; gap: 3rem; }
-            .left-col { border-right: none; padding-right: 0; }
-            .soon-text { font-size: 35vw; }
-            .glass-cards-wrapper { position: relative; flex-direction: column; gap: 2rem; margin-top: 2rem; }
-            .card-1, .card-2, .card-3 { transform: none !important; width: 100%; max-width: 350px; }
-            .visual-area { flex-direction: column; min-height: auto; padding: 4rem 0; }
-            .wheel-image { position: relative; margin-bottom: 2rem; }
-        }
-
+        /* Large phone */
         @media (max-width: 768px) {
-            .input-group { flex-direction: column; gap: 1rem; }
-            .ecosystem-grid, .features-grid { grid-template-columns: 1fr; }
-            h1 { font-size: 1.8rem; }
+            nav { padding-bottom: 1.5rem; margin-bottom: 2rem; }
+            .page { padding: 1.2rem; gap: 0; }
+            h1 { font-size: 1.9rem; }
+            .desc { max-width: 100%; }
+            .eco-grid { grid-template-columns: repeat(3, 1fr); }
+            .form-row { grid-template-columns: 1fr; }
+            .visual { min-height: 320px; }
+            .steps { position: relative; flex-direction: column; gap: 1rem; padding: 1.5rem 0; inset: auto; }
+            .s-card { width: 100%; max-width: 360px; transform: none !important; }
+            .soon-bg { display: none; }
+            .wheel-wrap { position: relative; width: 180px; margin: 0 auto; animation: none; }
+            .features { grid-template-columns: repeat(2, 1fr); }
         }
+
+        /* Small phone */
+        @media (max-width: 480px) {
+            nav { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            .logo { font-size: 1.4rem; }
+            h1 { font-size: 1.6rem; }
+            .eco-grid { grid-template-columns: 1fr; }
+            .features { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+            .f-card { padding: 0.9rem 0.7rem; }
+            .left { gap: 1.5rem; }
+        }
+
+        /* Very small */
+        @media (max-width: 360px) {
+            .features { grid-template-columns: 1fr; }
+        }
+
+        /* ── LOADING SPINNER ── */
+        .spinner {
+            display: none;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(0,0,0,0.3);
+            border-top-color: #0a0800;
+            border-radius: 50%;
+            animation: spin-s 0.7s linear infinite;
+        }
+        @keyframes spin-s { to { transform: rotate(360deg); } }
+        .btn.loading .spinner { display: block; }
+        .btn.loading .btn-text, .btn.loading .arrow { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
-    <div class="glow glow-3"></div>
+<div class="amb amb-1"></div>
+<div class="amb amb-2"></div>
+<div class="amb amb-3"></div>
 
-    <div class="container">
-        
-        <div class="left-col">
-            <div class="logo">Lafiray</div>
-            
-            <svg class="swoosh" viewBox="0 0 100 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 15C30 -5 70 -5 100 15" stroke="url(#gold-grad)" stroke-width="3" stroke-linecap="round"/>
-                <defs>
-                    <linearGradient id="gold-grad" x1="0" y1="0" x2="100" y2="0" gradientUnits="userSpaceOnUse">
-                        <stop stop-color="#D4AF37"/>
-                        <stop offset="1" stop-color="#B68D25" stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-            </svg>
+<div class="page">
 
-            <h1>Lafiray, la marketplace automobile moderne. Bientôt disponible.</h1>
-            
-            <p class="description">Plateforme web, application mobile (React Native) et API scalable pour les pièces automobiles au Maroc.</p>
-            
-            <div class="eyebrow">
-                Marketplace pièces auto · Maroc
+    <!-- NAV -->
+    <nav>
+        <div class="logo">Lafiray<span></span></div>
+        <div class="nav-badge">Bientôt disponible · Maroc</div>
+    </nav>
+
+    <!-- LEFT -->
+    <div class="left">
+        <div class="eyebrow">Marketplace Pièces Auto</div>
+
+        <h1>La marketplace automobile <em>moderne</em> arrive bientôt.</h1>
+
+        <p class="desc">Plateforme web, application mobile (React Native) et API scalable pour les pièces automobiles au Maroc. Connectons clients et fournisseurs.</p>
+
+        <!-- FORM -->
+        <div class="form-title">Soyez les premiers informés</div>
+        <div class="form-wrap" id="notifForm">
+            <div class="form-row">
+                <input type="text" id="firstName" placeholder="Prénom" required>
+                <input type="text" id="lastName" placeholder="Nom" required>
             </div>
-
-            <form class="notif-form">
-                <input type="text" placeholder="First name">
-                <div class="input-group">
-                    <input type="text" placeholder="Last name">
-                    <input type="email" placeholder="Email">
-                </div>
-                <input type="text" placeholder="Inscrivez-vous pour être notifié.">
-                <button type="button" class="btn-submit">Submit</button>
-            </form>
-
-            <div class="ecosystem-title">Notre Écosystème</div>
-            <div class="ecosystem-grid">
-                <div class="eco-card">
-                    <div class="eco-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        Client
-                    </div>
-                    <ul class="eco-list">
-                        <li>Publier demandes</li>
-                        <li>Recevoir offres</li>
-                        <li>Payer en ligne</li>
-                    </ul>
-                </div>
-                <div class="eco-card">
-                    <div class="eco-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                        Fournisseur
-                    </div>
-                    <ul class="eco-list">
-                        <li>Gérer stock</li>
-                        <li>Répondre demandes</li>
-                        <li>Voir stats</li>
-                    </ul>
-                </div>
-                <div class="eco-card">
-                    <div class="eco-header">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        Admin
-                    </div>
-                    <ul class="eco-list">
-                        <li>Valider fournisseurs</li>
-                        <li>Gérer catégories</li>
-                    </ul>
-                </div>
-            </div>
+            <input type="email" id="email" placeholder="Adresse email" required>
+            <input type="text" id="note" placeholder="Message ou note (optionnel)">
+            <button class="btn" id="submitBtn" onclick="handleSubmit()">
+                <div class="spinner"></div>
+                <span class="btn-text">Être notifié</span>
+                <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <div class="toast" id="toast"></div>
         </div>
 
-        <div class="right-col">
-            
-            <div class="visual-area">
-                <div class="soon-text">soon</div>
-                
-                <img src="https://images.unsplash.com/photo-1603509689849-012920f2df98?q=80&w=600&auto=format&fit=crop" alt="Jante Auto" class="wheel-image" style="border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;">
-
-                <div class="glass-cards-wrapper">
-                    <div class="glass-card card-1">
-                        <div class="step-badge">Étape 1</div>
-                        <div class="step-title">Demande Client</div>
-                        <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=300&auto=format&fit=crop" alt="Voiture" class="ui-car-img">
-                        <div style="font-size: 0.8rem; font-weight: bold; margin-bottom: 8px;">Clio 2018</div>
-                        <div class="ui-text-line"></div>
-                        <div class="ui-text-line short"></div>
-                        <button class="ui-btn-full">Demander</button>
-                    </div>
-
-                    <div class="glass-card card-2">
-                        <div class="step-badge">Étape 2</div>
-                        <div class="step-title">Réception Fournisseur</div>
-                        <div class="ui-row">
-                            <div class="ui-icon"></div>
-                            <div style="flex-grow: 1;">
-                                <div class="ui-text-line"></div>
-                                <div class="ui-text-line short"></div>
-                            </div>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        </div>
-                        <div class="ui-row">
-                            <div class="ui-icon"></div>
-                            <div style="flex-grow: 1;">
-                                <div class="ui-text-line"></div>
-                            </div>
-                        </div>
-                        <button class="ui-btn-full">Répondez</button>
-                    </div>
-
-                    <div class="glass-card card-3">
-                        <div class="step-badge">Étape 3</div>
-                        <div class="step-title">Validation Client</div>
-                        <div class="ui-row">
-                            <div class="ui-icon" style="border-radius: 50%;"></div>
-                            <div style="flex-grow: 1; font-size: 0.65rem; color: #aaa;">Délai: 2 à 4 jours</div>
-                            <button class="ui-btn-mini">Offres</button>
-                        </div>
-                        <div class="ui-row">
-                            <div class="ui-icon" style="border-radius: 50%;"></div>
-                            <div style="flex-grow: 1; font-size: 0.65rem; color: #aaa;">Délai: 2 à 4 jours</div>
-                            <button class="ui-btn-mini">Offres</button>
-                        </div>
-                        <button class="ui-btn-full">Valider</button>
-                    </div>
+        <!-- ECOSYSTEM -->
+        <div class="eco-label">Notre Écosystème</div>
+        <div class="eco-grid">
+            <div class="eco-card">
+                <div class="eco-head">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a5 5 0 0 1 10 0v2"/></svg>
+                    Client
                 </div>
+                <ul class="eco-list">
+                    <li>Publier demandes</li>
+                    <li>Recevoir offres</li>
+                    <li>Payer en ligne</li>
+                </ul>
             </div>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <svg class="f-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-                    <div class="f-title">Catalogue</div>
-                    <div class="f-desc">Cherchez parmi des milliers de références.</div>
+            <div class="eco-card">
+                <div class="eco-head">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    Fournisseur
                 </div>
-                <div class="feature-card">
-                    <svg class="f-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                    <div class="f-title">Demande</div>
-                    <div class="f-desc">Demandez et recevez les offres fournisseurs.</div>
-                </div>
-                <div class="feature-card">
-                    <svg class="f-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                    <div class="f-title">Livraison</div>
-                    <div class="f-desc">Livraison rapide et suivie partout au Maroc.</div>
-                </div>
-                <div class="feature-card">
-                    <svg class="f-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-                    <div class="f-title">Garanti</div>
-                    <div class="f-desc">Paiement sécurisé CMI.</div>
-                </div>
+                <ul class="eco-list">
+                    <li>Gérer stock</li>
+                    <li>Répondre</li>
+                    <li>Statistiques</li>
+                </ul>
             </div>
-
+            <div class="eco-card">
+                <div class="eco-head">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Admin
+                </div>
+                <ul class="eco-list">
+                    <li>Valider comptes</li>
+                    <li>Catégories</li>
+                    <li>Analytics</li>
+                </ul>
+            </div>
         </div>
     </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+        <!-- VISUAL HERO -->
+        <div class="visual">
+            <div class="soon-bg">soon</div>
+
+            <div class="wheel-wrap">
+                <img src="https://images.unsplash.com/photo-1603509689849-012920f2df98?q=80&w=600&auto=format&fit=crop" alt="Jante">
+            </div>
+
+            <div class="steps">
+                <!-- Card 1 -->
+                <div class="s-card">
+                    <div class="s-badge">Étape 1</div>
+                    <div class="s-title">Demande Client</div>
+                    <div class="s-img"><img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=300&auto=format&fit=crop" alt="voiture"></div>
+                    <div class="s-line"></div>
+                    <div class="s-line sh"></div>
+                    <button class="s-btn">Demander</button>
+                </div>
+                <!-- Card 2 -->
+                <div class="s-card">
+                    <div class="s-badge">Étape 2</div>
+                    <div class="s-title">Réception Offres</div>
+                    <div class="s-row">
+                        <div class="s-icon"></div>
+                        <div style="flex:1"><div class="s-line"></div><div class="s-line sh"></div></div>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5ed49a" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="s-row">
+                        <div class="s-icon"></div>
+                        <div style="flex:1"><div class="s-line"></div></div>
+                    </div>
+                    <button class="s-btn">Répondre</button>
+                </div>
+                <!-- Card 3 -->
+                <div class="s-card">
+                    <div class="s-badge">Étape 3</div>
+                    <div class="s-title">Validation</div>
+                    <div class="s-row">
+                        <div class="s-icon" style="border-radius:50%"></div>
+                        <div style="flex:1;font-size:0.6rem;color:var(--muted)">2–4 jours</div>
+                        <span class="s-minibtn">Offres</span>
+                    </div>
+                    <div class="s-row">
+                        <div class="s-icon" style="border-radius:50%"></div>
+                        <div style="flex:1;font-size:0.6rem;color:var(--muted)">2–4 jours</div>
+                        <span class="s-minibtn">Offres</span>
+                    </div>
+                    <button class="s-btn">Valider</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURES -->
+        <div class="features">
+            <div class="f-card">
+                <svg class="f-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                <div class="f-name">Catalogue</div>
+                <div class="f-text">Des milliers de références automobiles.</div>
+            </div>
+            <div class="f-card">
+                <svg class="f-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div class="f-name">Demandes</div>
+                <div class="f-text">Recevez les offres fournisseurs rapidement.</div>
+            </div>
+            <div class="f-card">
+                <svg class="f-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <div class="f-name">Livraison</div>
+                <div class="f-text">Livraison suivie partout au Maroc.</div>
+            </div>
+            <div class="f-card">
+                <svg class="f-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <div class="f-name">Sécurisé</div>
+                <div class="f-text">Paiement sécurisé CMI certifié.</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    // ─────────────────────────────────────────────────────────
+    // EMAILJS SETUP
+    // 1. Créez un compte gratuit sur https://www.emailjs.com
+    // 2. Ajoutez votre Service Email (Gmail, Outlook, etc.)
+    // 3. Créez un Template avec les variables : {{from_name}}, {{email}}, {{message}}
+    // 4. Remplacez les valeurs ci-dessous par vos clés réelles
+    // ─────────────────────────────────────────────────────────
+
+    const EMAILJS_CONFIG = {
+        publicKey:  "o8P8idwlE3TsA-Z7k",     // Account > API Keys
+        serviceId:  "service_804xulb",     // Email Services
+        templateId: "template_a66lkf8"    // Email Templates
+    };
+
+    emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
+
+    function showToast(type, msg) {
+        const t = document.getElementById('toast');
+        t.className = 'toast ' + type;
+        t.innerHTML = (type === 'success'
+            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+        ) + msg;
+        setTimeout(() => { t.className = 'toast'; }, 5000);
+    }
+
+    async function handleSubmit() {
+        const btn = document.getElementById('submitBtn');
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName  = document.getElementById('lastName').value.trim();
+        const email     = document.getElementById('email').value.trim();
+        const note      = document.getElementById('note').value.trim();
+
+        // Validation
+        if (!firstName || !lastName || !email) {
+            showToast('error', 'Veuillez remplir tous les champs obligatoires.');
+            return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showToast('error', 'Adresse email invalide.');
+            return;
+        }
+
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        const templateParams = {
+            from_name:  firstName + ' ' + lastName,
+            first_name: firstName,
+            last_name:  lastName,
+            email:      email,
+            message:    note || '(aucun message)',
+            reply_to:   email,
+            to_name:    'Lafiray',
+        };
+
+        try {
+            await emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams);
+            showToast('success', 'Merci ' + firstName + ' ! Vous serez notifié au lancement.');
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value  = '';
+            document.getElementById('email').value     = '';
+            document.getElementById('note').value      = '';
+        } catch (err) {
+            console.error('EmailJS error:', err);
+            showToast('error', 'Erreur d\'envoi. Veuillez réessayer.');
+        } finally {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+    }
+
+    // Allow Enter key to submit
+    document.querySelectorAll('#notifForm input').forEach(inp => {
+        inp.addEventListener('keydown', e => { if (e.key === 'Enter') handleSubmit(); });
+    });
+</script>
 
 </body>
 </html>
