@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Package manager lock files (keep package-lock.json since we modified package.json)
+# But ignore others if using different package managers
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
